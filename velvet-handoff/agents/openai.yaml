@@ -1,0 +1,4 @@
+interface:
+  display_name: "Velvet Handoff"
+  short_description: "Audit plans before execution"
+  default_prompt: "Use $velvet-handoff to audit this plan before execution."
