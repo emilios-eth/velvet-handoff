@@ -36,8 +36,8 @@ Open:
 3. ...
 
 ## Tooling
-| Step | Tool | Input | Output | Failure Mode |
-| --- | --- | --- | --- | --- |
+| Step | Tool | Input | Output | Stop Condition | Validation |
+| --- | --- | --- | --- | --- | --- |
 
 ## Risks
 | Risk | Mitigation |

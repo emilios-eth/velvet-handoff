@@ -14,6 +14,7 @@ Start with `quick` mode unless the user requests more.
 Return one of:
 
 - `Proceed`: plan is clear enough to execute
+- `Proceed with notes`: plan is clear enough, with small non-blocking cautions
 - `Revise`: plan needs fixes before execution
 - `Blocked`: missing decision, unsafe assumption, or major execution risk
 
@@ -28,6 +29,8 @@ Never use this skill as a substitute for implementation. If the plan is good eno
 | `full` | Expensive, mutating, architecture-level, or unclear work | Scope contract plus audit report |
 | `handoff` | User wants a plan passed to Codex or another agent | Execution handoff brief |
 
+Quick mode should fit in 3 to 5 minutes and end with execution, one concrete revision, or a real blocker.
+
 Escalate only when the task is long-running, costly, mutating, architecture-level, unclear, safety-sensitive, or high blast radius.
 
 ## Workflow
@@ -37,9 +40,9 @@ Escalate only when the task is long-running, costly, mutating, architecture-leve
 3. Audit the plan against that scope.
 4. Audit execution readiness against the codebase, tools, costs, tests, and failure modes.
 5. Audit whether the handoff format is easy for Codex to execute.
-6. Return `Proceed`, `Revise`, or `Blocked`.
+6. Return `Proceed`, `Proceed with notes`, `Revise`, or `Blocked`.
 
-When independent agents are available and the risk is high, use separate reviewers:
+When independent agents are available and the risk is high, use separate reviewers only when the cost of bad execution clearly exceeds the cost of review:
 
 - Scope Reader: extracts the user's real scope, rejections, requirements, and open decisions.
 - Plan Critic: compares the draft plan against the Scope Contract.
@@ -95,7 +98,7 @@ Default compact output:
 ```markdown
 ## Velvet Handoff
 
-Verdict: Proceed | Revise | Blocked
+Verdict: Proceed | Proceed with notes | Revise | Blocked
 
 Scope:
 - ...
@@ -141,7 +144,7 @@ Full output:
 - Suggested handoff shape:
 
 ## Verdict
-Proceed | Revise | Blocked
+Proceed | Proceed with notes | Revise | Blocked
 ```
 
 ## Segmentation Check
@@ -175,4 +178,4 @@ Recommended segment fields:
 - Do not ask for extra research unless it changes execution.
 - Do not require independent agents unless task risk is high.
 - Do not block execution over cosmetic issues.
-- Prefer "Proceed with these notes" over process theater.
+- Prefer `Verdict: Proceed with notes` over process theater.
