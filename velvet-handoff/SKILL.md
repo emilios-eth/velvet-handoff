@@ -9,7 +9,37 @@ Use Velvet Handoff to stop bad plans before they enter execution. Keep it lightw
 
 ## Default Behavior
 
-Start with `quick` mode unless the user requests more.
+Start with `quick` mode unless the user requests more or the invocation mode is explicit.
+
+Recognize explicit mode syntax in the user's request:
+
+```text
+[$velvet-handoff](...) mode=quick
+[$velvet-handoff](...) mode=standard
+[$velvet-handoff](...) mode=full
+[$velvet-handoff](...) mode=handoff
+```
+
+Also accept shorthand when it is adjacent to the skill invocation:
+
+```text
+[$velvet-handoff](...) quick
+[$velvet-handoff](...) standard
+[$velvet-handoff](...) full
+[$velvet-handoff](...) handoff
+```
+
+Mode selection rules:
+
+- If `mode=<quick|standard|full|handoff>` is present, use that mode.
+- If shorthand `quick`, `standard`, `full`, or `handoff` is present next to the invocation, use that mode.
+- If the user explicitly asks for an implementation handoff, use `handoff` unless they specify another mode.
+- If the user asks for a deep architecture, pre-implementation, expensive, mutating, or high-blast-radius audit and no mode is specified, use `full`.
+- If the user asks for a normal multi-step code or product audit and no mode is specified, use `standard`.
+- If the request is small or clearly a fast check and no mode is specified, use `quick`.
+- If the request is ambiguous and the mode affects depth, state which mode you are using and why before the audit.
+
+Quick mode must not use independent agents. It is a same-pass sanity check.
 
 Return one of:
 
@@ -98,7 +128,9 @@ Default compact output:
 ```markdown
 ## Velvet Handoff
 
+Mode: quick | standard | full | handoff
 Verdict: Proceed | Proceed with notes | Revise | Blocked
+Segmentation: Not needed | Needed
 
 Scope:
 - ...
@@ -170,9 +202,12 @@ Recommended segment fields:
 | Stop condition | When not to continue |
 | Validation | How to check it |
 
+If segmentation is needed, return the smallest useful step list. Do not build a project plan unless the user asked for one.
+
 ## Anti-Ceremony Rules
 
 - Do not use Velvet Handoff for simple tasks unless requested.
+- Do not use independent agents in quick mode.
 - Do not create long reports by default.
 - Do not invent architecture.
 - Do not ask for extra research unless it changes execution.

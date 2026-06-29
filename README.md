@@ -10,19 +10,21 @@ It is for complex, lengthy, expensive, ambiguous, mutating, or high-blast-radius
 
 ```mermaid
 flowchart TD
-    A["Complex or lengthy brainstorming"] --> B["Draft plan"]
+    A["Complex or lengthy brainstorming"] ~~~ BRAND["Velvet Handoff"]
+    A --> B["Draft plan"]
     B --> C["Pause before execution"]
-    C --> D["Quick Velvet Handoff"]
+    C --> D["Quick check"]
     D --> E{"High risk?"}
-    E -->|No| G["Proceed, Revise, or Block"]
-    E -->|Yes| F["Scope Reader + Plan/Execution Auditor"]
+    E -->|No| H{"Verdict"}
+    E -->|Yes| F["Scope + plan + execution audit"]
     B --> F
-    F --> G["Proceed, Revise, or Block"]
-    G --> H{"Verdict"}
+    F --> H
     H --> I["Proceed"]
+    H --> L["Proceed with notes"]
     H --> J["Revise"]
     H --> K["Blocked"]
     J --> B
+    style BRAND fill:#111827,color:#ffffff,stroke:#111827
 ```
 
 ## What It Checks
@@ -52,6 +54,15 @@ flowchart TD
 | `handoff` | You want an execution brief for Codex or another agent |
 
 Default to `quick`. Escalate only when risk justifies it. Quick mode should fit in 3 to 5 minutes and end with execution, one concrete revision, or a real blocker.
+
+## Output
+
+Every audit should state:
+
+- mode used
+- verdict
+- whether segmentation is needed
+- the one next action
 
 ## Install
 

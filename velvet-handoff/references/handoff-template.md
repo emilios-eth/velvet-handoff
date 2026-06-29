@@ -5,6 +5,9 @@ Use this only when the user wants a handoff or when the plan is complex enough t
 ```markdown
 # Execution Handoff: [Task Name]
 
+## Mode
+quick | standard | full | handoff
+
 ## Objective
 [One or two sentences.]
 
@@ -36,7 +39,7 @@ Open:
 3. ...
 
 ## Tooling
-| Step | Tool | Input | Output | Stop Condition | Validation |
+| Step | Owner/Tool | Input | Output | Stop Condition | Validation |
 | --- | --- | --- | --- | --- | --- |
 
 ## Risks
