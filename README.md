@@ -10,19 +10,15 @@ It is for complex, lengthy, expensive, ambiguous, mutating, or high-blast-radius
 
 ```mermaid
 flowchart TD
-    A["Complex or lengthy brainstorming"] ~~~ BRAND["Velvet Handoff"]
+    A["Complex or lengthy brainstorming"]
     A --> B["Draft plan"]
-    B --> C["Run velvet-handoff"]
-    C --> D["Scope, decisions, architecture, contracts, risks"]
-    D --> E["Implementation handoff packet"]
-    E --> F{"Ready For Implementation?"}
-    F -->|No| G["Revise or block"]
-    G --> B
-    F -->|Yes| H["User approves execution"]
-    H --> I["Run velvet-handoff-execute"]
-    I --> J["Execute one segment at a time"]
-    J --> K["Validate or stop"]
-    style BRAND fill:#111827,color:#ffffff,stroke:#111827
+    B --> C["Run $velvet-handoff"]
+    C --> D{"Packet ready?"}
+    D -->|No| E["Revise plan"]
+    E --> B
+    D -->|Yes| F["User approves"]
+    F --> G["Run /prompts:velvet-handoff-execute"]
+    G --> H["Implementation starts from packet"]
 ```
 
 ## What It Checks
@@ -58,14 +54,14 @@ It should contain:
 
 Implementation can start only when the packet says `Ready For Implementation`, open decisions are empty or non-blocking, and the user approves moving forward.
 
-## Two Invocations
+## Two Entry Points
 
-| Invocation | What it does | What it must not do |
+| Entry point | What it does | What it must not do |
 | --- | --- | --- |
-| `velvet-handoff` | Audits the plan and creates or updates the packet | Start implementation |
-| `velvet-handoff-execute` | Executes from an approved ready packet | Improvise from loose chat memory |
+| `$velvet-handoff` | Audits the plan and creates or updates the packet | Start implementation |
+| `/prompts:velvet-handoff-execute` | Executes from an approved ready packet | Improvise from loose chat memory |
 
-`velvet-handoff-execute` is the handoff trigger, not a second planning mode.
+`/prompts:velvet-handoff-execute` is the handoff trigger, not a second planning mode or a second skill.
 
 ## What It Will Not Do
 

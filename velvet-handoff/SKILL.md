@@ -9,12 +9,12 @@ Use Velvet Handoff to stop bad plans before they enter execution.
 
 This skill has one audit path. Do not ask the user to choose a mode.
 
-There are two invocations:
+There are two operational entry points:
 
-1. `velvet-handoff`: audit the plan and create or update an implementation handoff packet.
-2. `velvet-handoff-execute`: start implementation from an approved handoff packet.
+1. `$velvet-handoff`: audit the plan and create or update an implementation handoff packet.
+2. `/prompts:velvet-handoff-execute`: optional slash prompt that starts implementation from an approved handoff packet.
 
-`velvet-handoff-execute` is not a second audit mode. It is the implementation trigger after the packet is ready.
+`/prompts:velvet-handoff-execute` is not a second audit mode or a second skill. It is the implementation trigger after the packet is ready.
 
 ## Default Behavior
 
@@ -135,7 +135,7 @@ If independent agents are unavailable, do separated passes in the same response.
 
 ## Velvet Handoff Execute Workflow
 
-Use this only when the user explicitly asks to move forward with implementation or invokes `velvet-handoff-execute`.
+Use this only when the user explicitly asks to move forward with implementation or invokes `/prompts:velvet-handoff-execute`.
 
 1. Locate the handoff packet.
 2. Verify packet status is `Ready For Implementation`.
