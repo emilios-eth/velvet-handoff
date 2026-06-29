@@ -10,6 +10,7 @@ Read the handoff packet at the supplied path, or locate the obvious implementati
 Before editing anything, verify:
 
 - packet status is `Ready For Implementation`
+- source coverage is sufficient for the audit scope
 - open decisions are empty or explicitly non-blocking
 - north star sources are listed
 - unmaterialized chat decisions are written into the packet or another repo file

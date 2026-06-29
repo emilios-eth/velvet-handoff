@@ -6,9 +6,10 @@ Use it after a long or messy discussion, when the plan sounds clear in chat but 
 
 It does three things:
 
-1. Finds the north star: scope files in the repo plus agreed chat decisions that are not written down yet.
-2. Audits the handoff against the repo, tooling, contracts, failure modes, and validation plan.
-3. Returns a structured report sorted by importance. Every problem must include evidence and a realistic fix.
+1. Reports source coverage, including whether relevant chat history is visible.
+2. Finds the north star: scope files in the repo plus agreed chat decisions that are not written down yet.
+3. Audits the handoff against the repo, tooling, contracts, failure modes, and validation plan.
+4. Returns a structured report sorted by importance. Every problem must include evidence and a realistic fix.
 
 No motivational filler. No abstract frameworks. No "consider improving X" without saying exactly where, why, and how.
 
@@ -31,6 +32,7 @@ flowchart TD
 
 | Check | What it means |
 | --- | --- |
+| Source coverage | State whether repo files, handoff packet, and chat history are visible. If chat is missing for a chat-dependent audit, mark the audit incomplete. |
 | North star | Find repo files that define scope, architecture, decisions, data contracts, UI contracts, or validation. Also extract visible chat decisions that are not materialized in files. |
 | Scope drift | Compare the draft plan against accepted decisions, rejected decisions, excluded scope, and open decisions. |
 | Repo fit | Check whether the plan matches current code paths, current files, tests, schemas, commands, and existing conventions. |
@@ -56,6 +58,7 @@ Sort problems by severity. If a problem has no realistic fix, it is not ready to
 - Do not invent a north star. If no source-of-truth file exists, say that is the blocker.
 - Do not treat chat as implemented until a repo file or packet reflects it.
 - Do not reconstruct missing chat context. Ask for the excerpt, packet, or plan.
+- Do not hide missing chat context. If chat is not visible, mark the audit repo-only or incomplete.
 - Do not give generic advice like "improve error handling" without naming the exact failure, surface, and recovery.
 - Do not approve implementation when open decisions are blocking.
 - Do not approve implementation when validation is vague.
@@ -65,7 +68,7 @@ Sort problems by severity. If a problem has no realistic fix, it is not ready to
 
 ## Packet Gate
 
-Implementation can start only when the handoff packet says `Ready For Implementation`, open decisions are empty or non-blocking, and the user approves moving forward.
+Implementation can start only when the handoff packet says `Ready For Implementation`, source coverage is sufficient, open decisions are empty or non-blocking, and the user approves moving forward.
 
 Required packet sections are defined in `velvet-handoff/references/handoff-template.md`.
 

@@ -1,6 +1,6 @@
 ---
 name: velvet-handoff
-description: Pre-handoff implementation audit for complex or lengthy work. Use when Codex must turn a messy discussion, draft plan, or implementation packet into a grounded repo-aware handoff before execution. The skill finds the repo north star, extracts visible chat decisions that are not materialized in files, audits scope drift, tooling, contracts, failure handling, validation, and returns prioritized problems with concrete fixes. Do not use for simple one-step tasks unless requested.
+description: Pre-handoff implementation audit for complex or lengthy work. Use when Codex must turn a messy discussion, draft plan, or implementation packet into a grounded repo-aware handoff before execution. The skill first reports source coverage, including whether chat history is visible, then finds the repo north star, extracts visible chat decisions that are not materialized in files, audits scope drift, tooling, contracts, failure handling, validation, and returns prioritized problems with concrete fixes. Do not use for simple one-step tasks unless requested.
 ---
 
 # Velvet Handoff
@@ -11,10 +11,11 @@ This is not a planning exercise. It is a pre-handoff audit with receipts.
 
 ## Core Job
 
-1. Find the north star.
-2. Audit the draft plan or handoff packet against that north star.
-3. Return a prioritized report where every problem has evidence and a concrete fix.
-4. Create or update the implementation handoff packet only when the plan is grounded enough to preserve.
+1. Report source coverage, especially whether relevant chat history is visible.
+2. Find the north star.
+3. Audit the draft plan or handoff packet against that north star.
+4. Return a prioritized report where every problem has evidence and a concrete fix.
+5. Create or update the implementation handoff packet only when the plan is grounded enough to preserve.
 
 ## Entry Points
 
@@ -22,6 +23,28 @@ This is not a planning exercise. It is a pre-handoff audit with receipts.
 - `/prompts:velvet-handoff-execute`: optional slash prompt that starts implementation from an approved ready packet.
 
 `/prompts:velvet-handoff-execute` is not a second skill and not a planning mode.
+
+## Source Coverage Gate
+
+Before judging the plan, report what evidence is actually available.
+
+The audit must explicitly state:
+
+- repo files inspected
+- handoff packet path and status, if any
+- chat visibility: `visible`, `partial`, or `not provided`
+- whether the task requires chat-to-repo comparison
+- what cannot be verified because source coverage is missing
+
+If the task depends on prior chat decisions and chat is `partial` or `not provided`:
+
+- do not claim accepted decisions, rejected decisions, or unmaterialized decisions are complete
+- do not return `Ready For Implementation`
+- return `Revise` unless another blocker requires `Blocked`
+- add a P1 finding called `Chat-to-repo coverage missing`
+- set the concrete fix to: provide the relevant chat excerpt, decision log, or existing handoff packet, then rerun the audit
+
+If the user explicitly requested a repo-only audit, say `repo-only audit` in Source Coverage and continue. In that case, do not report chat omissions as blockers.
 
 ## North Star Discovery
 
@@ -42,7 +65,7 @@ Search the repo for scope and planning artifacts, especially:
 
 Also extract visible chat decisions that are not materialized in files.
 
-If the chat history is unavailable or incomplete, say that explicitly and ask for the missing excerpt, packet, or plan. Do not reconstruct missing decisions from vibes.
+If the chat history is unavailable or incomplete, say that explicitly in Source Coverage and ask for the missing excerpt, packet, or plan. Do not reconstruct missing decisions from vibes.
 
 Classify each item as:
 
@@ -125,6 +148,10 @@ Use this structure:
 
 Status: Ready For Implementation | Revise | Blocked
 
+## Source Coverage
+| Source type | Available? | Evidence | Caveat |
+| --- | --- | --- | --- |
+
 ## North Star
 | Source | What it controls | Status |
 | --- | --- | --- |
@@ -144,6 +171,7 @@ Status: Ready For Implementation | Revise | Blocked
 ## Packet Status
 - Path:
 - Status:
+- Source coverage:
 - Blocking open decisions:
 
 ## Next Action
@@ -190,6 +218,7 @@ Source docs:
 Implementation can start only when:
 
 - packet status is `Ready For Implementation`
+- source coverage is sufficient for the audit scope
 - open decisions are empty or explicitly non-blocking
 - P0 and P1 findings are fixed
 - implementation segments have stop conditions and validation checks
@@ -205,10 +234,11 @@ Before editing anything:
 
 1. Locate the handoff packet.
 2. Verify status is `Ready For Implementation`.
-3. Verify open decisions are empty or non-blocking.
-4. Verify P0 and P1 findings are fixed.
-5. Verify each implementation segment has input, output, stop condition, and validation.
-6. Stop if chat contains newer decisions that contradict the packet.
+3. Verify source coverage is sufficient for the audit scope.
+4. Verify open decisions are empty or non-blocking.
+5. Verify P0 and P1 findings are fixed.
+6. Verify each implementation segment has input, output, stop condition, and validation.
+7. Stop if chat contains newer decisions that contradict the packet.
 
 During implementation, execute from the packet, not from loose chat memory.
 
@@ -217,6 +247,7 @@ During implementation, execute from the packet, not from loose chat memory.
 - Do not write motivational framing.
 - Do not use abstract frameworks unless tied to repo evidence.
 - Do not write "consider", "maybe", "improve", or "ensure" without a concrete file, tool, or check.
+- Do not hide missing chat context. State it in Source Coverage.
 - Do not approve implementation with vague validation.
 - Do not approve implementation when source-of-truth files are missing.
 - Do not block on cosmetic issues.

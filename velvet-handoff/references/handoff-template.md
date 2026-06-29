@@ -9,6 +9,10 @@ Status: Draft | Ready For Implementation | Blocked
 Last reviewed:
 Source docs:
 
+## Source Coverage
+| Source type | Available? | Evidence | Caveat |
+| --- | --- | --- | --- |
+
 ## Objective
 [One or two sentences.]
 
@@ -69,6 +73,7 @@ Source docs:
 
 ## Implementation Start Checklist
 - [ ] North star sources are listed
+- [ ] Source coverage is sufficient for the audit scope
 - [ ] Unmaterialized decisions are written into this packet or another repo file
 - [ ] Status is Ready For Implementation
 - [ ] Open decisions are empty or non-blocking
