@@ -75,6 +75,18 @@ Run only audits that matter right before handoff:
 
 Skip audits that do not apply. Do not pad the report.
 
+## Independent Reviewers
+
+Use independent audit agents only when they materially reduce handoff risk, usually for P0/P1-heavy plans, expensive implementation, unclear scope, or high blast radius.
+
+When independent audit agents are used:
+
+- use the strongest available reasoning model unless the user explicitly asks to optimize for cost or it is unavailable
+- keep the reviewer count small
+- give each reviewer a bounded audit surface
+- require repo evidence and concrete fixes in their findings
+- ignore any finding that has no evidence or no realistic fix
+
 ## Problem Reporting Rules
 
 Every problem must have all fields below:
@@ -209,3 +221,4 @@ During implementation, execute from the packet, not from loose chat memory.
 - Do not approve implementation when source-of-truth files are missing.
 - Do not block on cosmetic issues.
 - Do not create a giant report to look thorough.
+- Do not spawn low-value reviewers. If reviewers are needed, use the strongest available reasoning model and keep them scoped.

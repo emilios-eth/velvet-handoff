@@ -20,11 +20,9 @@ flowchart TD
     A --> B["Draft plan"]
     B --> C["Run $velvet-handoff"]
     C --> D{"North star found?"}
-    D -->|No| E["Write missing scope decisions"]
-    E --> B
+    D -->|No| E["Blocked: write missing scope decisions"]
     D -->|Yes| F{"Blocking problems?"}
-    F -->|Yes| G["Fix plan or packet"]
-    G --> B
+    F -->|Yes| G["Revise: fix plan or packet"]
     F -->|No| H["User approves"]
     H --> I["Run /prompts:velvet-handoff-execute"]
 ```
@@ -63,6 +61,7 @@ Sort problems by severity. If a problem has no realistic fix, it is not ready to
 - Do not approve implementation when validation is vague.
 - Do not start implementation from loose chat memory.
 - Do not produce a long report when five sharp findings are enough.
+- If independent audit agents are used, use the strongest available reasoning model and keep the agent count small.
 
 ## Packet Gate
 
