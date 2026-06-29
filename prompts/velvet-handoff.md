@@ -1,14 +1,14 @@
 ---
-description: Audit a plan and produce a ready-for-implementation handoff packet
+description: Run a repo-grounded pre-handoff audit
 argument-hint: "[plan, repo path, or brief]"
 ---
 
 Use $velvet-handoff on the supplied plan or current conversation.
 
-Create or update an implementation handoff packet. Do not start implementation.
+Find the repo north star first: scope files, planning docs, architecture docs, schemas, tests, and current implementation files. Extract visible chat decisions that are not materialized in repo files.
 
-The packet must include objective, included scope, excluded scope, accepted decisions, rejected decisions, open decisions, architecture, tool and data contracts, UI contracts, error and recovery contracts, evidence and verdict contracts, implementation segments, stop conditions, validation plan, known risks, and implementation start checklist.
+Audit only what matters right before handoff: scope drift, repo fit, tool fit, contracts, failure handling, validation, and implementation segmentation.
 
-Return `Ready For Implementation`, `Revise`, or `Blocked`.
+Return a structured report sorted by severity. Every problem must include evidence, why it matters, a concrete fix, where the fix belongs, and validation.
 
-Implementation can start only when the packet says `Ready For Implementation`, open decisions are empty or non-blocking, and the user approves moving forward.
+Create or update the implementation handoff packet only when the plan is grounded enough to preserve. Do not start implementation.

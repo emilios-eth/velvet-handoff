@@ -1,4 +1,4 @@
 interface:
   display_name: "Velvet Handoff"
-  short_description: "Audit plans and prepare implementation packets"
-  default_prompt: "Run $velvet-handoff on this plan. Create or update the implementation handoff packet, but do not start implementation."
+  short_description: "Repo-grounded pre-handoff audit"
+  default_prompt: "Run $velvet-handoff on this plan. Find the repo north star, flag unmaterialized chat decisions, and return prioritized findings with concrete fixes before implementation."

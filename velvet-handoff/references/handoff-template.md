@@ -1,6 +1,6 @@
 # Implementation Handoff Packet Template
 
-Use this when the audit is ready enough to preserve the implementation plan.
+Use this packet only after the pre-handoff audit has found the north star and resolved blocking findings.
 
 ```markdown
 # Implementation Handoff: [Feature]
@@ -28,6 +28,14 @@ Source docs:
 - None
 - [Decision] - non-blocking because ...
 
+## North Star Sources
+| Source | What it controls |
+| --- | --- |
+
+## Unmaterialized Decisions
+| Decision | Source | Materialize in |
+| --- | --- | --- |
+
 ## Architecture
 - ...
 
@@ -46,8 +54,8 @@ Source docs:
 - ...
 
 ## Implementation Segments
-| Step | Owner/tool | Input | Output | Stop condition | Validation |
-| --- | --- | --- | --- | --- | --- |
+| Step | Input | Output | Stop condition | Validation |
+| --- | --- | --- | --- | --- |
 
 ## Stop Conditions
 - ...
@@ -56,15 +64,16 @@ Source docs:
 - ...
 
 ## Known Risks
-| Risk | Mitigation |
-| --- | --- |
+| Risk | Mitigation | Accepted? |
+| --- | --- | --- |
 
 ## Implementation Start Checklist
+- [ ] North star sources are listed
+- [ ] Unmaterialized decisions are written into this packet or another repo file
 - [ ] Status is Ready For Implementation
 - [ ] Open decisions are empty or non-blocking
+- [ ] P0 and P1 findings are fixed
 - [ ] Segments have stop conditions
 - [ ] Validation plan is explicit
 - [ ] User approved implementation
 ```
-
-Keep the packet short enough to execute. Use tables for contracts, segments, risks, and validation.

@@ -11,6 +11,9 @@ Before editing anything, verify:
 
 - packet status is `Ready For Implementation`
 - open decisions are empty or explicitly non-blocking
+- north star sources are listed
+- unmaterialized chat decisions are written into the packet or another repo file
+- P0 and P1 findings are fixed
 - implementation segments have stop conditions and validation checks
 - the user has approved moving from audit to implementation
 

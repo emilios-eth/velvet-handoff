@@ -1,113 +1,100 @@
 # Velvet Handoff
 
-Velvet Handoff is a Codex skill for turning messy, high-stakes planning into a clean implementation handoff.
+Velvet Handoff is a Codex skill for the last serious audit before an agent starts implementation.
 
-It is for complex, lengthy, expensive, ambiguous, mutating, or high-blast-radius work. It is not a planning framework and not a substitute for shipping.
+Use it after a long or messy discussion, when the plan sounds clear in chat but may not be grounded in the repo yet.
 
-**Five minutes before execution beats five hours of cleanup.**
+It does three things:
+
+1. Finds the north star: scope files in the repo plus agreed chat decisions that are not written down yet.
+2. Audits the handoff against the repo, tooling, contracts, failure modes, and validation plan.
+3. Returns a structured report sorted by importance. Every problem must include evidence and a realistic fix.
+
+No motivational filler. No abstract frameworks. No "consider improving X" without saying exactly where, why, and how.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-    A["Complex or lengthy brainstorming"]
+    A["Complex or lengthy discussion"]
     A --> B["Draft plan"]
     B --> C["Run $velvet-handoff"]
-    C --> D{"Packet ready?"}
-    D -->|No| E["Revise plan"]
+    C --> D{"North star found?"}
+    D -->|No| E["Write missing scope decisions"]
     E --> B
-    D -->|Yes| F["User approves"]
-    F --> G["Run /prompts:velvet-handoff-execute"]
-    G --> H["Implementation starts from packet"]
+    D -->|Yes| F{"Blocking problems?"}
+    F -->|Yes| G["Fix plan or packet"]
+    G --> B
+    F -->|No| H["User approves"]
+    H --> I["Run /prompts:velvet-handoff-execute"]
 ```
 
-## What It Checks
+## What It Must Check
 
-| Gate | Question |
+| Check | What it means |
 | --- | --- |
-| Scope Gate | Did we understand what the user actually wants? |
-| Plan Gate | Does the plan satisfy the scope without omissions or scope creep? |
-| Execution Gate | Will the plan survive contact with code, tools, cost, tests, and failure modes? |
-| Handoff Format Gate | Is the plan shaped so Codex or another agent can execute it correctly? |
+| North star | Find repo files that define scope, architecture, decisions, data contracts, UI contracts, or validation. Also extract visible chat decisions that are not materialized in files. |
+| Scope drift | Compare the draft plan against accepted decisions, rejected decisions, excluded scope, and open decisions. |
+| Repo fit | Check whether the plan matches current code paths, current files, tests, schemas, commands, and existing conventions. |
+| Tool fit | Check whether the selected tools are real, available, efficient enough, and have failure handling. |
+| Contracts | Check inputs, outputs, storage, UI states, errors, recovery, evidence, verdicts, and stop conditions. |
+| Execution shape | Check whether the implementation needs segments, approvals, or kill points before the next agent touches code. |
 
-## The Packet
+## Report Rules
 
-The handoff packet is the source of truth before implementation starts.
+Every reported problem must include:
 
-It should contain:
+- severity: `P0`, `P1`, `P2`, or `P3`
+- evidence: repo file with line when available, command output, visible chat decision, or named missing artifact
+- why it matters
+- concrete fix
+- where the fix belongs
+- validation check
 
-- objective
-- included and excluded scope
-- accepted decisions
-- rejected decisions
-- open decisions
-- architecture
-- tool and data contracts
-- UI contracts
-- error and recovery contracts
-- evidence and verdict contracts
-- implementation segments
-- stop conditions
-- validation plan
-- known risks
-- implementation start checklist
+Sort problems by severity. If a problem has no realistic fix, it is not ready to report.
 
-Implementation can start only when the packet says `Ready For Implementation`, open decisions are empty or non-blocking, and the user approves moving forward.
+## Hard Guardrails
 
-## Two Entry Points
+- Do not invent a north star. If no source-of-truth file exists, say that is the blocker.
+- Do not treat chat as implemented until a repo file or packet reflects it.
+- Do not reconstruct missing chat context. Ask for the excerpt, packet, or plan.
+- Do not give generic advice like "improve error handling" without naming the exact failure, surface, and recovery.
+- Do not approve implementation when open decisions are blocking.
+- Do not approve implementation when validation is vague.
+- Do not start implementation from loose chat memory.
+- Do not produce a long report when five sharp findings are enough.
 
-| Entry point | What it does | What it must not do |
-| --- | --- | --- |
-| `$velvet-handoff` | Audits the plan and creates or updates the packet | Start implementation |
-| `/prompts:velvet-handoff-execute` | Executes from an approved ready packet | Improvise from loose chat memory |
+## Packet Gate
 
-`/prompts:velvet-handoff-execute` is the handoff trigger, not a second planning mode or a second skill.
+Implementation can start only when the handoff packet says `Ready For Implementation`, open decisions are empty or non-blocking, and the user approves moving forward.
 
-## What It Will Not Do
+Required packet sections are defined in `velvet-handoff/references/handoff-template.md`.
 
-- It will not audit simple tasks unless you ask.
-- It will not create long reports by default.
-- It will not block execution over cosmetic issues.
-- It will not call independent agents unless the risk justifies the review cost.
-- It will not start implementation without a ready packet and explicit approval.
+## Entry Points
+
+| Entry point | What it does |
+| --- | --- |
+| `$velvet-handoff` | Runs the pre-handoff audit and creates or updates the implementation packet. |
+| `/prompts:velvet-handoff-execute` | Starts implementation from an approved ready packet. |
 
 ## Install
 
-Copy the inner `velvet-handoff/` folder that contains `SKILL.md` into your Codex skills directory.
-
-The final path should be:
+Copy the inner `velvet-handoff/` folder into:
 
 ```text
-~/.codex/skills/velvet-handoff/SKILL.md
+~/.codex/skills/velvet-handoff/
 ```
 
-Then invoke it with:
-
-```text
-Use $velvet-handoff to audit this plan before execution.
-```
-
-## Optional Slash Commands
-
-Codex skills are the recommended path. Treat these custom prompts as optional wrappers for people who prefer commands.
-
-Copy the files in `prompts/` into:
+Optional slash prompts live in `prompts/`. Copy them into:
 
 ```text
 ~/.codex/prompts/
 ```
 
-Then use:
+Use it with:
 
 ```text
+Use $velvet-handoff on this plan before implementation.
 /prompts:velvet-handoff
 /prompts:velvet-handoff-execute docs/planning/my-feature-implementation-handoff.md
 ```
-
-The slash commands only call the skill with a stricter prompt. The skill remains the real logic.
-
-## Skill ID
-
-The public name is **Velvet Handoff**.
-
-The Codex skill id is `velvet-handoff` because Codex skill names use hyphen-case.

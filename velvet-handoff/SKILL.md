@@ -1,67 +1,152 @@
 ---
 name: velvet-handoff
-description: Single-path pre-execution audit and implementation readiness check for complex, lengthy, expensive, ambiguous, mutating, or high-blast-radius work. Use when the user asks to audit a plan, prepare implementation, check for omissions or scope creep, verify tool/codebase fit before implementation, or explicitly invokes $velvet-handoff. Do not use for simple one-step tasks unless requested.
+description: Pre-handoff implementation audit for complex or lengthy work. Use when Codex must turn a messy discussion, draft plan, or implementation packet into a grounded repo-aware handoff before execution. The skill finds the repo north star, extracts visible chat decisions that are not materialized in files, audits scope drift, tooling, contracts, failure handling, validation, and returns prioritized problems with concrete fixes. Do not use for simple one-step tasks unless requested.
 ---
 
 # Velvet Handoff
 
-Use Velvet Handoff to stop bad plans before they enter execution.
+Use Velvet Handoff right before implementation begins.
 
-This skill has one audit path. Do not ask the user to choose a mode.
+This is not a planning exercise. It is a pre-handoff audit with receipts.
 
-There are two operational entry points:
+## Core Job
 
-1. `$velvet-handoff`: audit the plan and create or update an implementation handoff packet.
-2. `/prompts:velvet-handoff-execute`: optional slash prompt that starts implementation from an approved handoff packet.
+1. Find the north star.
+2. Audit the draft plan or handoff packet against that north star.
+3. Return a prioritized report where every problem has evidence and a concrete fix.
+4. Create or update the implementation handoff packet only when the plan is grounded enough to preserve.
 
-`/prompts:velvet-handoff-execute` is not a second audit mode or a second skill. It is the implementation trigger after the packet is ready.
+## Entry Points
 
-## Default Behavior
+- `$velvet-handoff`: run the pre-handoff audit and create or update the implementation packet.
+- `/prompts:velvet-handoff-execute`: optional slash prompt that starts implementation from an approved ready packet.
 
-Run one integrated audit that is deep enough to prevent wasted implementation work and compact enough to avoid process theater.
+`/prompts:velvet-handoff-execute` is not a second skill and not a planning mode.
 
-If the user invokes Velvet Handoff before implementation, produce an execution-ready audit:
+## North Star Discovery
 
-- scope contract
-- accepted, rejected, and open decisions
-- plan audit
-- architecture audit
-- tool and data contracts
-- UI contracts when relevant
-- error and recovery contracts
-- evidence and verdict contracts when relevant
-- implementation segmentation
-- validation plan
-- known risks
-- implementation readiness verdict
+Before judging the plan, find the current source of truth.
 
-If the plan is too vague to audit, return `Blocked` or `Revise` and name the smallest concrete missing decision.
+Search the repo for scope and planning artifacts, especially:
 
-Return one of:
+- `AGENTS.md`
+- `README.md`
+- `docs/`
+- `docs/planning/`
+- `docs/specs/`
+- `docs/decisions/`
+- `docs/architecture/`
+- `schemas/`
+- tests that define expected behavior
+- existing implementation files that the plan claims it will change
 
-- `Ready For Implementation`: packet is complete enough to execute after user approval
-- `Revise`: packet needs fixes before execution
-- `Blocked`: missing decision, unsafe assumption, stale packet, or major execution risk
+Also extract visible chat decisions that are not materialized in files.
 
-Never use this skill as a substitute for implementation. If the packet is ready, say so and wait for explicit user approval to execute.
+If the chat history is unavailable or incomplete, say that explicitly and ask for the missing excerpt, packet, or plan. Do not reconstruct missing decisions from vibes.
+
+Classify each item as:
+
+| Type | Meaning |
+| --- | --- |
+| Repo north star | Existing file that defines scope, architecture, contracts, validation, or decisions. |
+| Materialized decision | Chat decision already reflected in repo files. |
+| Unmaterialized decision | Chat decision that matters but is not written into the repo or packet. |
+| Open decision | Required choice that is still unresolved. |
+| Rejected path | Thing the user explicitly rejected and the plan must not reintroduce. |
+
+Guardrails:
+
+- Do not invent a north star.
+- Do not treat chat as implemented until it appears in a repo file or packet.
+- If the repo has no source-of-truth file, report that as a blocker or required fix.
+
+## Audit Scope
+
+Run only audits that matter right before handoff:
+
+| Audit | Required question |
+| --- | --- |
+| Scope audit | Does the plan match accepted decisions, excluded scope, rejected paths, and open decisions? |
+| Repo-fit audit | Does the plan match current code paths, current files, tests, schemas, and conventions? |
+| Tool-fit audit | Are the selected tools real, available, efficient enough, and appropriate for the job? |
+| Contract audit | Are data, UI, error, recovery, evidence, verdict, and stop-condition contracts explicit? |
+| Execution audit | Is the work split into implementation segments only where needed? |
+| Validation audit | Are validation checks concrete enough to run after implementation? |
+
+Skip audits that do not apply. Do not pad the report.
+
+## Problem Reporting Rules
+
+Every problem must have all fields below:
+
+| Field | Requirement |
+| --- | --- |
+| Severity | `P0`, `P1`, `P2`, or `P3`. |
+| Problem | One concrete issue. |
+| Evidence | File path with line when available, command result, visible chat decision, packet section, or named missing artifact. |
+| Why it matters | Practical implementation risk, not abstract concern. |
+| Fix | Realistic change tied to the repo, packet, tooling, or validation. |
+| Where | File, packet section, command, tool, or implementation segment. |
+| Validation | Exact check that proves the fix worked. |
+
+Sort by severity, then by implementation order.
+
+Severity guide:
+
+| Severity | Meaning |
+| --- | --- |
+| P0 | Implementation must not start. Scope, data, safety, or validation is fundamentally blocked. |
+| P1 | Implementation can start only after this is fixed. High chance of wrong build or wasted work. |
+| P2 | Should fix before handoff. Manageable risk if explicitly accepted. |
+| P3 | Cleanup, clarity, or minor efficiency issue. Never block on P3 alone. |
+
+If a finding has no evidence, do not report it.
+
+If a finding has no concrete fix, call it an open decision or omit it.
+
+## Output Format
+
+Use this structure:
+
+```markdown
+## Velvet Handoff
+
+Status: Ready For Implementation | Revise | Blocked
+
+## North Star
+| Source | What it controls | Status |
+| --- | --- | --- |
+
+## Unmaterialized Decisions
+| Decision | Source | Needed file or packet section | Blocking? |
+| --- | --- | --- | --- |
+
+## Findings
+| Severity | Problem | Evidence | Why it matters | Fix | Where | Validation |
+| --- | --- | --- | --- | --- | --- | --- |
+
+## Implementation Segments
+| Step | Input | Output | Stop condition | Validation |
+| --- | --- | --- | --- | --- |
+
+## Packet Status
+- Path:
+- Status:
+- Blocking open decisions:
+
+## Next Action
+- ...
+```
+
+Keep the report short. Prefer five sharp findings over fifteen soft ones.
 
 ## Handoff Packet Contract
-
-The audit stage and implementation stage are connected by a file called the handoff packet.
 
 Default packet path for repo work:
 
 ```text
 docs/planning/<project-or-feature>-implementation-handoff.md
 ```
-
-For the X Pods revamped pipeline, use:
-
-```text
-docs/planning/revamped-pipeline-implementation-handoff.md
-```
-
-The handoff packet is the source of truth for implementation. It must be created or updated at the end of the audit when the plan is ready enough to preserve. Implementation must not begin from chat context alone.
 
 Required packet sections:
 
@@ -73,35 +158,20 @@ Last reviewed:
 Source docs:
 
 ## Objective
-
 ## Included Scope
-
 ## Excluded Scope
-
 ## Accepted Decisions
-
 ## Rejected Decisions
-
 ## Open Decisions
-
 ## Architecture
-
 ## Tool And Data Contracts
-
 ## UI Contracts
-
 ## Error And Recovery Contracts
-
 ## Evidence And Verdict Contracts
-
 ## Implementation Segments
-
 ## Stop Conditions
-
 ## Validation Plan
-
 ## Known Risks
-
 ## Implementation Start Checklist
 ```
 
@@ -109,162 +179,33 @@ Implementation can start only when:
 
 - packet status is `Ready For Implementation`
 - open decisions are empty or explicitly non-blocking
+- P0 and P1 findings are fixed
 - implementation segments have stop conditions and validation checks
 - the user has approved moving from audit to implementation
 
-If the packet is missing, stale, or contradicted by newer chat decisions, return `Blocked` and update the packet first.
+If the packet is missing, stale, or contradicted by newer chat decisions, return `Blocked` or `Revise` and update the packet first.
 
-## Velvet Handoff Workflow
+## Execute Entry Point
 
-1. Freeze the draft plan.
-2. Extract the actual scope from the user's request and decisions.
-3. Separate included scope, excluded scope, accepted decisions, rejected decisions, and open decisions.
-4. Audit the plan against that scope.
-5. Audit architecture, tools, data contracts, UI contracts, failure handling, costs, tests, and blast radius.
-6. Decide whether implementation must be segmented.
-7. Create or update the handoff packet.
-8. Return `Ready For Implementation`, `Revise`, or `Blocked`.
+Use `/prompts:velvet-handoff-execute` only when the user explicitly approves implementation.
 
-When independent agents are available and the risk is high, use separate reviewers only when the cost of bad execution clearly exceeds the cost of review:
-
-- Scope Reader: extracts the user's real scope, rejections, requirements, and open decisions.
-- Plan Critic: compares the draft plan against the Scope Contract.
-- Execution Critic: checks tooling, codebase fit, efficiency, validation, and failure handling.
-
-If independent agents are unavailable, do separated passes in the same response.
-
-## Velvet Handoff Execute Workflow
-
-Use this only when the user explicitly asks to move forward with implementation or invokes `/prompts:velvet-handoff-execute`.
+Before editing anything:
 
 1. Locate the handoff packet.
-2. Verify packet status is `Ready For Implementation`.
-3. Verify open decisions are empty or marked non-blocking.
-4. Verify each implementation segment has inputs, outputs, stop conditions, and validation.
-5. Confirm the user approved implementation.
-6. Execute one segment at a time.
-7. Stop at any stop condition, failed validation, stale assumption, or new blocking decision.
-8. Update the user with what changed, what was validated, and what remains.
+2. Verify status is `Ready For Implementation`.
+3. Verify open decisions are empty or non-blocking.
+4. Verify P0 and P1 findings are fixed.
+5. Verify each implementation segment has input, output, stop condition, and validation.
+6. Stop if chat contains newer decisions that contradict the packet.
 
-Do not implement from loose chat memory when a packet exists or should exist.
+During implementation, execute from the packet, not from loose chat memory.
 
-## Checks
+## Zero Fluff Rules
 
-### Scope Gate
-
-Verify:
-
-- the objective is explicit
-- included and excluded scope are separated
-- accepted, rejected, and open decisions are distinct
-- user rejections are not reintroduced
-- the plan does not expand beyond the request
-
-### Plan Gate
-
-Verify:
-
-- every major requirement is addressed
-- the plan is ordered
-- assumptions are named
-- success criteria are observable
-- unresolved decisions are not hidden
-
-### Execution Gate
-
-Verify:
-
-- selected tools fit the task
-- the plan uses current code paths, not obsolete ones
-- required data or APIs are actually available
-- failure modes are visible and recoverable
-- validation is named
-- time, cost, and blast radius are bounded
-
-### Handoff Format Gate
-
-Verify the plan is easy for Codex or another agent to execute.
-
-Preferred format: structured Markdown with short sections and tables.
-
-Use the template in `references/handoff-template.md` when the user asks for a handoff or when the plan is complex.
-
-## Output Format
-
-Use this structure unless the user explicitly asks for a shorter answer:
-
-```markdown
-## Velvet Handoff
-
-Status: Ready For Implementation | Revise | Blocked
-
-## Scope Contract
-- Objective:
-- Included:
-- Excluded:
-- Accepted decisions:
-- Rejected decisions:
-- Open decisions:
-
-## Plan Audit
-- Passes:
-- Omissions:
-- Contradictions:
-- Scope creep:
-
-## Execution Audit
-- Architecture:
-- Codebase/tool fit:
-- Tool/data contracts:
-- UI contracts:
-- Error/recovery contracts:
-- Evidence/verdict contracts:
-- Validation:
-
-## Implementation Segments
-| Step | Owner/tool | Input | Output | Stop condition | Validation |
-
-## Packet Status
-- Path:
-- Updated:
-- Blocking decisions:
-
-## Next
-- ...
-```
-
-## Segmentation Check
-
-Decide whether the plan should be split into implementation segments.
-
-Suggest segmentation when:
-
-- more than 3 files or modules are affected
-- work spans multiple stages or tools
-- there are separate discovery, implementation, and validation phases
-- user approval is needed midstream
-- failure in one step should stop later steps
-
-Recommended segment fields:
-
-| Field | Meaning |
-| --- | --- |
-| Step | Ordered action |
-| Owner/tool | Agent, script, API, browser, local code |
-| Input | What the step consumes |
-| Output | What the step produces |
-| Stop condition | When not to continue |
-| Validation | How to check it |
-
-If segmentation is needed, return the smallest useful step list. Do not build a project plan unless the user asked for one.
-
-## Anti-Ceremony Rules
-
-- Do not use Velvet Handoff for simple tasks unless requested.
-- Do not create long reports by default.
-- Do not invent architecture.
-- Do not ask for extra research unless it changes execution.
-- Do not require independent agents unless task risk is high.
-- Do not block execution over cosmetic issues.
-- Do not expose multiple Velvet modes to the user.
-- Do not start implementation without a `Ready For Implementation` packet and explicit user approval.
+- Do not write motivational framing.
+- Do not use abstract frameworks unless tied to repo evidence.
+- Do not write "consider", "maybe", "improve", or "ensure" without a concrete file, tool, or check.
+- Do not approve implementation with vague validation.
+- Do not approve implementation when source-of-truth files are missing.
+- Do not block on cosmetic issues.
+- Do not create a giant report to look thorough.
