@@ -3,7 +3,7 @@ description: Start implementation from a ready Velvet Handoff packet
 argument-hint: "[handoff packet path]"
 ---
 
-Use $velvet-handoff in implementation stage.
+Use $$velvet-handoff in implementation stage.
 
 Read the handoff packet at the supplied path, or locate the obvious implementation handoff packet for this repo.
 

@@ -84,11 +84,13 @@ Copy the inner `velvet-handoff/` folder into:
 ~/.codex/skills/velvet-handoff/
 ```
 
-Optional slash prompts live in `prompts/`. Copy them into:
+Optional slash prompts live in `prompts/`. Custom prompts are local Codex files, not repo-loaded commands. Copy the Markdown files directly into:
 
 ```text
 ~/.codex/prompts/
 ```
+
+Then restart Codex or open a new chat so the commands load. Codex scans only top-level Markdown files in that folder.
 
 Use it with:
 
@@ -97,3 +99,5 @@ Use $velvet-handoff on this plan before implementation.
 /prompts:velvet-handoff
 /prompts:velvet-handoff-execute docs/planning/my-feature-implementation-handoff.md
 ```
+
+If `/prompts:velvet-handoff-execute` does not appear in your Codex surface, use `$velvet-handoff` and ask it to execute from the ready handoff packet. The skill is the supported durable workflow; the slash prompt is only a convenience wrapper.

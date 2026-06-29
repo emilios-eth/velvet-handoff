@@ -3,7 +3,7 @@ description: Run a repo-grounded pre-handoff audit
 argument-hint: "[plan, repo path, or brief]"
 ---
 
-Use $velvet-handoff on the supplied plan or current conversation.
+Use $$velvet-handoff on the supplied plan or current conversation.
 
 Find the repo north star first: scope files, planning docs, architecture docs, schemas, tests, and current implementation files. Extract visible chat decisions that are not materialized in repo files.
 
