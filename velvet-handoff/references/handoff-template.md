@@ -10,8 +10,8 @@ Last reviewed:
 Source docs:
 
 ## Source Coverage
-| Source type | Available? | Evidence | Caveat |
-| --- | --- | --- | --- |
+| Source type | Available? | Evidence | Coverage | Caveat |
+| --- | --- | --- | --- | --- |
 
 ## Objective
 [One or two sentences.]

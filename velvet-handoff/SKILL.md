@@ -32,19 +32,32 @@ The audit must explicitly state:
 
 - repo files inspected
 - handoff packet path and status, if any
-- chat visibility: `visible`, `partial`, or `not provided`
+- chat source: `raw visible`, `compressed summary visible`, `decision log or packet only`, `not provided`, or `repo-only requested`
 - whether the task requires chat-to-repo comparison
-- what cannot be verified because source coverage is missing
+- whether source coverage is `sufficient`, `sufficient with caveat`, or `insufficient`
+- what decision areas are out of scope because source coverage is missing
 
-If the task depends on prior chat decisions and chat is `partial` or `not provided`:
+Compressed chat is usable evidence. Treat it as a lossy source, not as no source.
 
+If compressed chat, a decision log, or a handoff packet is available and appears to cover the implementation scope:
+
+- use it
+- mark source coverage as `sufficient with caveat`
+- name the caveat as `based on compressed chat/decision artifact, not raw transcript`
+- do not use vague language like `cannot prove all unmaterialized decisions are captured`
+- phrase the limitation as `decisions not present in the available chat artifact, decision log, or packet are out of scope for this audit`
+- do not block implementation only because the raw transcript is unavailable
+
+If the task depends on prior chat decisions and there is no visible chat artifact, decision log, or packet:
+
+- mark source coverage as `insufficient`
 - do not claim accepted decisions, rejected decisions, or unmaterialized decisions are complete
 - do not return `Ready For Implementation`
 - return `Revise` unless another blocker requires `Blocked`
 - add a P1 finding called `Chat-to-repo coverage missing`
 - set the concrete fix to: provide the relevant chat excerpt, decision log, or existing handoff packet, then rerun the audit
 
-If the user explicitly requested a repo-only audit, say `repo-only audit` in Source Coverage and continue. In that case, do not report chat omissions as blockers.
+If the user explicitly requested a repo-only audit, say `repo-only requested` in Source Coverage and continue. In that case, do not report chat omissions as blockers.
 
 ## North Star Discovery
 
@@ -65,7 +78,7 @@ Search the repo for scope and planning artifacts, especially:
 
 Also extract visible chat decisions that are not materialized in files.
 
-If the chat history is unavailable or incomplete, say that explicitly in Source Coverage and ask for the missing excerpt, packet, or plan. Do not reconstruct missing decisions from vibes.
+If the chat history is unavailable or incomplete, say that explicitly in Source Coverage and ask for the missing excerpt, packet, or plan only when the missing context can change implementation. Do not reconstruct missing decisions from vibes.
 
 Classify each item as:
 
@@ -149,8 +162,8 @@ Use this structure:
 Status: Ready For Implementation | Revise | Blocked
 
 ## Source Coverage
-| Source type | Available? | Evidence | Caveat |
-| --- | --- | --- | --- |
+| Source type | Available? | Evidence | Coverage | Caveat |
+| --- | --- | --- | --- | --- |
 
 ## North Star
 | Source | What it controls | Status |
@@ -248,6 +261,8 @@ During implementation, execute from the packet, not from loose chat memory.
 - Do not use abstract frameworks unless tied to repo evidence.
 - Do not write "consider", "maybe", "improve", or "ensure" without a concrete file, tool, or check.
 - Do not hide missing chat context. State it in Source Coverage.
+- Do not block only because raw chat is unavailable when a compressed summary, decision log, or handoff packet covers the implementation scope.
+- Do not write `cannot prove all decisions are captured`; state the actual source used and what is out of scope.
 - Do not approve implementation with vague validation.
 - Do not approve implementation when source-of-truth files are missing.
 - Do not block on cosmetic issues.

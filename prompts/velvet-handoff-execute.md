@@ -11,6 +11,7 @@ Before editing anything, verify:
 
 - packet status is `Ready For Implementation`
 - source coverage is sufficient for the audit scope
+- source coverage is allowed to be `sufficient with caveat` when the caveat is compressed chat, decision log, or packet coverage
 - open decisions are empty or explicitly non-blocking
 - north star sources are listed
 - unmaterialized chat decisions are written into the packet or another repo file

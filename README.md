@@ -32,7 +32,7 @@ flowchart TD
 
 | Check | What it means |
 | --- | --- |
-| Source coverage | State whether repo files, handoff packet, and chat history are visible. If chat is missing for a chat-dependent audit, mark the audit incomplete. |
+| Source coverage | State whether repo files, handoff packet, raw chat, compressed chat summary, or decision log are visible. Use compressed summaries when available. Block only when missing context can change implementation. |
 | North star | Find repo files that define scope, architecture, decisions, data contracts, UI contracts, or validation. Also extract visible chat decisions that are not materialized in files. |
 | Scope drift | Compare the draft plan against accepted decisions, rejected decisions, excluded scope, and open decisions. |
 | Repo fit | Check whether the plan matches current code paths, current files, tests, schemas, commands, and existing conventions. |
@@ -58,7 +58,9 @@ Sort problems by severity. If a problem has no realistic fix, it is not ready to
 - Do not invent a north star. If no source-of-truth file exists, say that is the blocker.
 - Do not treat chat as implemented until a repo file or packet reflects it.
 - Do not reconstruct missing chat context. Ask for the excerpt, packet, or plan.
-- Do not hide missing chat context. If chat is not visible, mark the audit repo-only or incomplete.
+- Do not hide missing chat context. State the exact source used: raw chat, compressed summary, decision log, packet, or repo-only.
+- Do not block only because raw chat is unavailable when a compressed summary, decision log, or handoff packet covers the implementation scope.
+- Do not write "cannot prove all decisions are captured." Say what source was used and what is out of scope.
 - Do not give generic advice like "improve error handling" without naming the exact failure, surface, and recovery.
 - Do not approve implementation when open decisions are blocking.
 - Do not approve implementation when validation is vague.
