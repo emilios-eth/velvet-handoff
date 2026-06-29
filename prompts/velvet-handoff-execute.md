@@ -1,0 +1,19 @@
+---
+description: Start implementation from a ready Velvet Handoff packet
+argument-hint: "[handoff packet path]"
+---
+
+Use $velvet-handoff in implementation stage.
+
+Read the handoff packet at the supplied path, or locate the obvious implementation handoff packet for this repo.
+
+Before editing anything, verify:
+
+- packet status is `Ready For Implementation`
+- open decisions are empty or explicitly non-blocking
+- implementation segments have stop conditions and validation checks
+- the user has approved moving from audit to implementation
+
+If any check fails, return `Blocked` and explain the smallest fix needed.
+
+If all checks pass, execute one implementation segment at a time. Stop on failed validation, stale assumptions, missing data, or any packet stop condition.

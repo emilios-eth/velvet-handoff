@@ -1,59 +1,70 @@
-# Execution Handoff Template
+# Implementation Handoff Packet Template
 
-Use this only when the user wants a handoff or when the plan is complex enough that Codex may miss details.
+Use this when the audit is ready enough to preserve the implementation plan.
 
 ```markdown
-# Execution Handoff: [Task Name]
+# Implementation Handoff: [Feature]
 
-## Mode
-quick | standard | full | handoff
+Status: Draft | Ready For Implementation | Blocked
+Last reviewed:
+Source docs:
 
 ## Objective
 [One or two sentences.]
 
-## Scope
-In:
+## Included Scope
 - ...
 
-Out:
+## Excluded Scope
 - ...
 
-## Decisions
-Accepted:
+## Accepted Decisions
 - ...
 
-Rejected:
+## Rejected Decisions
 - ...
 
-Open:
+## Open Decisions
+- None
+- [Decision] - non-blocking because ...
+
+## Architecture
 - ...
 
-## Current Context
-- Relevant files:
-- Existing systems:
-- Constraints:
+## Tool And Data Contracts
+| Area | Owner/tool | Input | Output | Contract |
+| --- | --- | --- | --- | --- |
 
-## Plan
-1. ...
-2. ...
-3. ...
+## UI Contracts
+- ...
 
-## Tooling
-| Step | Owner/Tool | Input | Output | Stop Condition | Validation |
+## Error And Recovery Contracts
+| Failure | User-visible signal | Recovery | Stop condition |
+| --- | --- | --- | --- |
+
+## Evidence And Verdict Contracts
+- ...
+
+## Implementation Segments
+| Step | Owner/tool | Input | Output | Stop condition | Validation |
 | --- | --- | --- | --- | --- | --- |
 
-## Risks
+## Stop Conditions
+- ...
+
+## Validation Plan
+- ...
+
+## Known Risks
 | Risk | Mitigation |
 | --- | --- |
 
-## Validation
-- ...
-
-## Stop / Approval Gates
-- ...
-
-## Final Output
-- ...
+## Implementation Start Checklist
+- [ ] Status is Ready For Implementation
+- [ ] Open decisions are empty or non-blocking
+- [ ] Segments have stop conditions
+- [ ] Validation plan is explicit
+- [ ] User approved implementation
 ```
 
-Keep the handoff short. Use tables for scope, risks, tools, and tests. Use prose only when context matters.
+Keep the packet short enough to execute. Use tables for contracts, segments, risks, and validation.

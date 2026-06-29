@@ -1,76 +1,129 @@
 ---
 name: velvet-handoff
-description: Lightweight pre-execution audit for complex, lengthy, expensive, ambiguous, mutating, or high-blast-radius work. Use when the user asks to audit a plan, prepare an execution handoff, check for omissions or scope creep, verify tool/codebase fit before implementation, or explicitly invokes $velvet-handoff. Do not use for simple one-step tasks unless requested.
+description: Single-path pre-execution audit and implementation readiness check for complex, lengthy, expensive, ambiguous, mutating, or high-blast-radius work. Use when the user asks to audit a plan, prepare implementation, check for omissions or scope creep, verify tool/codebase fit before implementation, or explicitly invokes $velvet-handoff. Do not use for simple one-step tasks unless requested.
 ---
 
 # Velvet Handoff
 
-Use Velvet Handoff to stop bad plans before they enter execution. Keep it lightweight: run the smallest review that can prevent wasted effort.
+Use Velvet Handoff to stop bad plans before they enter execution.
+
+This skill has one audit path. Do not ask the user to choose a mode.
+
+There are two invocations:
+
+1. `velvet-handoff`: audit the plan and create or update an implementation handoff packet.
+2. `velvet-handoff-execute`: start implementation from an approved handoff packet.
+
+`velvet-handoff-execute` is not a second audit mode. It is the implementation trigger after the packet is ready.
 
 ## Default Behavior
 
-Start with `quick` mode unless the user requests more or the invocation mode is explicit.
+Run one integrated audit that is deep enough to prevent wasted implementation work and compact enough to avoid process theater.
 
-Recognize explicit mode syntax in the user's request:
+If the user invokes Velvet Handoff before implementation, produce an execution-ready audit:
 
-```text
-[$velvet-handoff](...) mode=quick
-[$velvet-handoff](...) mode=standard
-[$velvet-handoff](...) mode=full
-[$velvet-handoff](...) mode=handoff
-```
+- scope contract
+- accepted, rejected, and open decisions
+- plan audit
+- architecture audit
+- tool and data contracts
+- UI contracts when relevant
+- error and recovery contracts
+- evidence and verdict contracts when relevant
+- implementation segmentation
+- validation plan
+- known risks
+- implementation readiness verdict
 
-Also accept shorthand when it is adjacent to the skill invocation:
-
-```text
-[$velvet-handoff](...) quick
-[$velvet-handoff](...) standard
-[$velvet-handoff](...) full
-[$velvet-handoff](...) handoff
-```
-
-Mode selection rules:
-
-- If `mode=<quick|standard|full|handoff>` is present, use that mode.
-- If shorthand `quick`, `standard`, `full`, or `handoff` is present next to the invocation, use that mode.
-- If the user explicitly asks for an implementation handoff, use `handoff` unless they specify another mode.
-- If the user asks for a deep architecture, pre-implementation, expensive, mutating, or high-blast-radius audit and no mode is specified, use `full`.
-- If the user asks for a normal multi-step code or product audit and no mode is specified, use `standard`.
-- If the request is small or clearly a fast check and no mode is specified, use `quick`.
-- If the request is ambiguous and the mode affects depth, state which mode you are using and why before the audit.
-
-Quick mode must not use independent agents. It is a same-pass sanity check.
+If the plan is too vague to audit, return `Blocked` or `Revise` and name the smallest concrete missing decision.
 
 Return one of:
 
-- `Proceed`: plan is clear enough to execute
-- `Proceed with notes`: plan is clear enough, with small non-blocking cautions
-- `Revise`: plan needs fixes before execution
-- `Blocked`: missing decision, unsafe assumption, or major execution risk
+- `Ready For Implementation`: packet is complete enough to execute after user approval
+- `Revise`: packet needs fixes before execution
+- `Blocked`: missing decision, unsafe assumption, stale packet, or major execution risk
 
-Never use this skill as a substitute for implementation. If the plan is good enough, say so and move on.
+Never use this skill as a substitute for implementation. If the packet is ready, say so and wait for explicit user approval to execute.
 
-## Modes
+## Handoff Packet Contract
 
-| Mode | Use When | Output |
-| --- | --- | --- |
-| `quick` | Normal risky task | 5 to 10 bullets |
-| `standard` | Multi-step coding, analysis, or product work | Short structured sections |
-| `full` | Expensive, mutating, architecture-level, or unclear work | Scope contract plus audit report |
-| `handoff` | User wants a plan passed to Codex or another agent | Execution handoff brief |
+The audit stage and implementation stage are connected by a file called the handoff packet.
 
-Quick mode should fit in 3 to 5 minutes and end with execution, one concrete revision, or a real blocker.
+Default packet path for repo work:
 
-Escalate only when the task is long-running, costly, mutating, architecture-level, unclear, safety-sensitive, or high blast radius.
+```text
+docs/planning/<project-or-feature>-implementation-handoff.md
+```
 
-## Workflow
+For the X Pods revamped pipeline, use:
+
+```text
+docs/planning/revamped-pipeline-implementation-handoff.md
+```
+
+The handoff packet is the source of truth for implementation. It must be created or updated at the end of the audit when the plan is ready enough to preserve. Implementation must not begin from chat context alone.
+
+Required packet sections:
+
+```markdown
+# Implementation Handoff: <feature>
+
+Status: Draft | Ready For Implementation | Blocked
+Last reviewed:
+Source docs:
+
+## Objective
+
+## Included Scope
+
+## Excluded Scope
+
+## Accepted Decisions
+
+## Rejected Decisions
+
+## Open Decisions
+
+## Architecture
+
+## Tool And Data Contracts
+
+## UI Contracts
+
+## Error And Recovery Contracts
+
+## Evidence And Verdict Contracts
+
+## Implementation Segments
+
+## Stop Conditions
+
+## Validation Plan
+
+## Known Risks
+
+## Implementation Start Checklist
+```
+
+Implementation can start only when:
+
+- packet status is `Ready For Implementation`
+- open decisions are empty or explicitly non-blocking
+- implementation segments have stop conditions and validation checks
+- the user has approved moving from audit to implementation
+
+If the packet is missing, stale, or contradicted by newer chat decisions, return `Blocked` and update the packet first.
+
+## Velvet Handoff Workflow
 
 1. Freeze the draft plan.
-2. Extract the actual scope from the user's request.
-3. Audit the plan against that scope.
-4. Audit execution readiness against the codebase, tools, costs, tests, and failure modes.
-5. Audit whether the handoff format is easy for Codex to execute.
-6. Return `Proceed`, `Proceed with notes`, `Revise`, or `Blocked`.
+2. Extract the actual scope from the user's request and decisions.
+3. Separate included scope, excluded scope, accepted decisions, rejected decisions, and open decisions.
+4. Audit the plan against that scope.
+5. Audit architecture, tools, data contracts, UI contracts, failure handling, costs, tests, and blast radius.
+6. Decide whether implementation must be segmented.
+7. Create or update the handoff packet.
+8. Return `Ready For Implementation`, `Revise`, or `Blocked`.
 
 When independent agents are available and the risk is high, use separate reviewers only when the cost of bad execution clearly exceeds the cost of review:
 
@@ -79,6 +132,21 @@ When independent agents are available and the risk is high, use separate reviewe
 - Execution Critic: checks tooling, codebase fit, efficiency, validation, and failure handling.
 
 If independent agents are unavailable, do separated passes in the same response.
+
+## Velvet Handoff Execute Workflow
+
+Use this only when the user explicitly asks to move forward with implementation or invokes `velvet-handoff-execute`.
+
+1. Locate the handoff packet.
+2. Verify packet status is `Ready For Implementation`.
+3. Verify open decisions are empty or marked non-blocking.
+4. Verify each implementation segment has inputs, outputs, stop conditions, and validation.
+5. Confirm the user approved implementation.
+6. Execute one segment at a time.
+7. Stop at any stop condition, failed validation, stale assumption, or new blocking decision.
+8. Update the user with what changed, what was validated, and what remains.
+
+Do not implement from loose chat memory when a packet exists or should exist.
 
 ## Checks
 
@@ -123,39 +191,19 @@ Use the template in `references/handoff-template.md` when the user asks for a ha
 
 ## Output Format
 
-Default compact output:
+Use this structure unless the user explicitly asks for a shorter answer:
 
 ```markdown
 ## Velvet Handoff
 
-Mode: quick | standard | full | handoff
-Verdict: Proceed | Proceed with notes | Revise | Blocked
-Segmentation: Not needed | Needed
+Status: Ready For Implementation | Revise | Blocked
 
-Scope:
-- ...
-
-Risks:
-- ...
-
-Execution:
-- ...
-
-Format:
-- ...
-
-Next:
-- ...
-```
-
-Full output:
-
-```markdown
 ## Scope Contract
-- Agreed:
-- Rejected:
-- Required:
-- Non-goals:
+- Objective:
+- Included:
+- Excluded:
+- Accepted decisions:
+- Rejected decisions:
 - Open decisions:
 
 ## Plan Audit
@@ -165,23 +213,29 @@ Full output:
 - Scope creep:
 
 ## Execution Audit
+- Architecture:
 - Codebase/tool fit:
-- Failure handling:
-- Efficiency:
+- Tool/data contracts:
+- UI contracts:
+- Error/recovery contracts:
+- Evidence/verdict contracts:
 - Validation:
 
-## Handoff Audit
-- Format issues:
-- Segmentation needed:
-- Suggested handoff shape:
+## Implementation Segments
+| Step | Owner/tool | Input | Output | Stop condition | Validation |
 
-## Verdict
-Proceed | Proceed with notes | Revise | Blocked
+## Packet Status
+- Path:
+- Updated:
+- Blocking decisions:
+
+## Next
+- ...
 ```
 
 ## Segmentation Check
 
-Decide whether the plan should be split into steps before execution.
+Decide whether the plan should be split into implementation segments.
 
 Suggest segmentation when:
 
@@ -207,10 +261,10 @@ If segmentation is needed, return the smallest useful step list. Do not build a 
 ## Anti-Ceremony Rules
 
 - Do not use Velvet Handoff for simple tasks unless requested.
-- Do not use independent agents in quick mode.
 - Do not create long reports by default.
 - Do not invent architecture.
 - Do not ask for extra research unless it changes execution.
 - Do not require independent agents unless task risk is high.
 - Do not block execution over cosmetic issues.
-- Prefer `Verdict: Proceed with notes` over process theater.
+- Do not expose multiple Velvet modes to the user.
+- Do not start implementation without a `Ready For Implementation` packet and explicit user approval.

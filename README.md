@@ -1,6 +1,6 @@
 # Velvet Handoff
 
-Velvet Handoff is a lightweight Codex skill for auditing plans before execution.
+Velvet Handoff is a Codex skill for turning messy, high-stakes planning into a clean implementation handoff.
 
 It is for complex, lengthy, expensive, ambiguous, mutating, or high-blast-radius work. It is not a planning framework and not a substitute for shipping.
 
@@ -12,18 +12,16 @@ It is for complex, lengthy, expensive, ambiguous, mutating, or high-blast-radius
 flowchart TD
     A["Complex or lengthy brainstorming"] ~~~ BRAND["Velvet Handoff"]
     A --> B["Draft plan"]
-    B --> C["Pause before execution"]
-    C --> D["Quick check"]
-    D --> E{"High risk?"}
-    E -->|No| H{"Verdict"}
-    E -->|Yes| F["Scope + plan + execution audit"]
-    B --> F
-    F --> H
-    H --> I["Proceed"]
-    H --> L["Proceed with notes"]
-    H --> J["Revise"]
-    H --> K["Blocked"]
-    J --> B
+    B --> C["Run velvet-handoff"]
+    C --> D["Scope, decisions, architecture, contracts, risks"]
+    D --> E["Implementation handoff packet"]
+    E --> F{"Ready For Implementation?"}
+    F -->|No| G["Revise or block"]
+    G --> B
+    F -->|Yes| H["User approves execution"]
+    H --> I["Run velvet-handoff-execute"]
+    I --> J["Execute one segment at a time"]
+    J --> K["Validate or stop"]
     style BRAND fill:#111827,color:#ffffff,stroke:#111827
 ```
 
@@ -36,33 +34,46 @@ flowchart TD
 | Execution Gate | Will the plan survive contact with code, tools, cost, tests, and failure modes? |
 | Handoff Format Gate | Is the plan shaped so Codex or another agent can execute it correctly? |
 
+## The Packet
+
+The handoff packet is the source of truth before implementation starts.
+
+It should contain:
+
+- objective
+- included and excluded scope
+- accepted decisions
+- rejected decisions
+- open decisions
+- architecture
+- tool and data contracts
+- UI contracts
+- error and recovery contracts
+- evidence and verdict contracts
+- implementation segments
+- stop conditions
+- validation plan
+- known risks
+- implementation start checklist
+
+Implementation can start only when the packet says `Ready For Implementation`, open decisions are empty or non-blocking, and the user approves moving forward.
+
+## Two Invocations
+
+| Invocation | What it does | What it must not do |
+| --- | --- | --- |
+| `velvet-handoff` | Audits the plan and creates or updates the packet | Start implementation |
+| `velvet-handoff-execute` | Executes from an approved ready packet | Improvise from loose chat memory |
+
+`velvet-handoff-execute` is the handoff trigger, not a second planning mode.
+
 ## What It Will Not Do
 
 - It will not audit simple tasks unless you ask.
 - It will not create long reports by default.
 - It will not block execution over cosmetic issues.
 - It will not call independent agents unless the risk justifies the review cost.
-- It will not replace implementation.
-
-## Modes
-
-| Mode | Use When |
-| --- | --- |
-| `quick` | Normal risky task |
-| `standard` | Multi-step coding, analysis, or product work |
-| `full` | Expensive, mutating, architecture-level, or unclear work |
-| `handoff` | You want an execution brief for Codex or another agent |
-
-Default to `quick`. Escalate only when risk justifies it. Quick mode should fit in 3 to 5 minutes and end with execution, one concrete revision, or a real blocker.
-
-## Output
-
-Every audit should state:
-
-- mode used
-- verdict
-- whether segmentation is needed
-- the one next action
+- It will not start implementation without a ready packet and explicit approval.
 
 ## Install
 
@@ -79,6 +90,25 @@ Then invoke it with:
 ```text
 Use $velvet-handoff to audit this plan before execution.
 ```
+
+## Optional Slash Commands
+
+Codex skills are the recommended path. Treat these custom prompts as optional wrappers for people who prefer commands.
+
+Copy the files in `prompts/` into:
+
+```text
+~/.codex/prompts/
+```
+
+Then use:
+
+```text
+/prompts:velvet-handoff
+/prompts:velvet-handoff-execute docs/planning/my-feature-implementation-handoff.md
+```
+
+The slash commands only call the skill with a stricter prompt. The skill remains the real logic.
 
 ## Skill ID
 

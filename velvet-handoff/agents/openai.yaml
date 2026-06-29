@@ -1,4 +1,4 @@
 interface:
   display_name: "Velvet Handoff"
-  short_description: "Audit plans before execution"
-  default_prompt: "Run a 5-minute $velvet-handoff on this plan before execution."
+  short_description: "Audit plans and prepare implementation packets"
+  default_prompt: "Run $velvet-handoff on this plan. Create or update the implementation handoff packet, but do not start implementation."
