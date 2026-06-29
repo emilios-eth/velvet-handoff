@@ -17,4 +17,6 @@ Audit only what matters right before handoff: scope drift, repo fit, tool fit, c
 
 Return a structured report sorted by severity. Every problem must include evidence, why it matters, a concrete fix, where the fix belongs, and validation.
 
+Then drive the user through the audit: convert P0/P1 findings into a decision queue, pick the current blocking decision, recommend one option, show realistic alternatives, and ask the user to choose that one decision before moving on.
+
 Create or update the implementation handoff packet only when the plan is grounded enough to preserve. Do not start implementation.

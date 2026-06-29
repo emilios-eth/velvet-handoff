@@ -9,7 +9,8 @@ It does three things:
 1. Reports source coverage, including whether relevant chat history is visible.
 2. Finds the north star: scope files in the repo plus agreed chat decisions that are not written down yet.
 3. Audits the handoff against the repo, tooling, contracts, failure modes, and validation plan.
-4. Returns a structured report sorted by importance. Every problem must include evidence and a realistic fix.
+4. Turns blocking findings into a decision queue and drives the user through one decision at a time.
+5. Returns a structured report sorted by importance. Every problem must include evidence and a realistic fix.
 
 No motivational filler. No abstract frameworks. No "consider improving X" without saying exactly where, why, and how.
 
@@ -23,9 +24,11 @@ flowchart TD
     C --> D{"North star found?"}
     D -->|No| E["Blocked: write missing scope decisions"]
     D -->|Yes| F{"Blocking problems?"}
-    F -->|Yes| G["Revise: fix plan or packet"]
-    F -->|No| H["User approves"]
-    H --> I["Run /prompts:velvet-handoff-execute"]
+    F -->|Yes| G["Decision queue"]
+    G --> H["Resolve current decision"]
+    H --> I["Update packet, then rerun audit"]
+    F -->|No| J["User approves execution"]
+    J --> K["Run /prompts:velvet-handoff-execute"]
 ```
 
 ## What It Must Check
@@ -39,6 +42,7 @@ flowchart TD
 | Tool fit | Check whether the selected tools are real, available, efficient enough, and have failure handling. |
 | Contracts | Check inputs, outputs, storage, UI states, errors, recovery, evidence, verdicts, and stop conditions. |
 | Execution shape | Check whether the implementation needs segments, approvals, or kill points before the next agent touches code. |
+| Decision path | Convert P0/P1 findings into a current decision with concrete options, recommendation, tradeoff, and validation. |
 
 ## Report Rules
 
@@ -53,6 +57,8 @@ Every reported problem must include:
 
 Sort problems by severity. If a problem has no realistic fix, it is not ready to report.
 
+The audit must not end with only a generic next action. It must name the current decision, recommend one option, show alternatives, and ask the user to choose that decision before moving on.
+
 ## Hard Guardrails
 
 - Do not invent a north star. If no source-of-truth file exists, say that is the blocker.
@@ -66,6 +72,7 @@ Sort problems by severity. If a problem has no realistic fix, it is not ready to
 - Do not approve implementation when validation is vague.
 - Do not start implementation from loose chat memory.
 - Do not produce a long report when five sharp findings are enough.
+- Do not dump findings and walk away. Drive the next blocking decision one at a time.
 - If independent audit agents are used, use the strongest available reasoning model and keep the agent count small.
 
 ## Packet Gate

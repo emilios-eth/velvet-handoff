@@ -152,6 +152,50 @@ If a finding has no evidence, do not report it.
 
 If a finding has no concrete fix, call it an open decision or omit it.
 
+## Decision Driver
+
+Do not leave the user with a passive findings dump.
+
+After reporting findings, turn blocking findings into a decision queue.
+
+Rules:
+
+- Start with P0 findings, then P1 findings.
+- Merge findings only when the same concrete decision fixes them.
+- Pick one current decision. Usually choose the first P0/P1 item that blocks the most later work.
+- Recommend one default option.
+- Give 2 to 4 realistic options, including the recommended option.
+- Tie each option to repo files, packet sections, tooling, validation, and likely tradeoff.
+- Ask the user to decide only the current decision unless they explicitly ask to batch decisions.
+- After the user decides, write or update the relevant packet section, then move to the next decision.
+- Do not move to execution until the queue is empty or remaining items are marked non-blocking.
+- If no P0/P1 decisions remain, make the current decision `Approve implementation start`.
+- For `Approve implementation start`, options must be `A: mark packet Ready For Implementation and proceed`, `B: keep Draft and name the remaining concern`, and `C: rerun audit after user-supplied changes`.
+
+Use this decision shape:
+
+```markdown
+## Decision Queue
+| # | Severity | Decision needed | Blocks | Recommended option |
+| --- | --- | --- | --- | --- |
+
+## Current Decision
+Decision:
+Why now:
+Recommendation:
+
+Options:
+| Option | What changes | Tradeoff | Validation |
+| --- | --- | --- | --- |
+
+Reply with:
+- `A` to accept the recommendation
+- `B` / `C` to choose another option
+- `defer` only if you accept the listed blocker staying open
+```
+
+Do not ask vague questions like "What do you want to do?" Ask for a decision against named options.
+
 ## Output Format
 
 Use this structure:
@@ -176,6 +220,24 @@ Status: Ready For Implementation | Revise | Blocked
 ## Findings
 | Severity | Problem | Evidence | Why it matters | Fix | Where | Validation |
 | --- | --- | --- | --- | --- | --- | --- |
+
+## Decision Queue
+| # | Severity | Decision needed | Blocks | Recommended option |
+| --- | --- | --- | --- | --- |
+
+## Current Decision
+Decision:
+Why now:
+Recommendation:
+
+Options:
+| Option | What changes | Tradeoff | Validation |
+| --- | --- | --- | --- |
+
+Reply with:
+- `A` to accept the recommendation
+- `B` / `C` to choose another option
+- `defer` only if you accept the listed blocker staying open
 
 ## Implementation Segments
 | Step | Input | Output | Stop condition | Validation |

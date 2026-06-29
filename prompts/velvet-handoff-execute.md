@@ -16,6 +16,7 @@ Before editing anything, verify:
 - north star sources are listed
 - unmaterialized chat decisions are written into the packet or another repo file
 - P0 and P1 findings are fixed
+- P0 and P1 decision queue is resolved or marked non-blocking
 - implementation segments have stop conditions and validation checks
 - the user has approved moving from audit to implementation
 

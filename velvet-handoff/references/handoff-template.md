@@ -40,6 +40,14 @@ Source docs:
 | Decision | Source | Materialize in |
 | --- | --- | --- |
 
+## Decision Queue
+| # | Severity | Decision needed | Status | Resolution |
+| --- | --- | --- | --- | --- |
+
+## Decision Resolution Log
+| Decision | Chosen option | Reason | Updated section | Validation |
+| --- | --- | --- | --- | --- |
+
 ## Architecture
 - ...
 
@@ -75,6 +83,7 @@ Source docs:
 - [ ] North star sources are listed
 - [ ] Source coverage is sufficient for the audit scope
 - [ ] Unmaterialized decisions are written into this packet or another repo file
+- [ ] P0 and P1 decision queue is resolved or explicitly marked non-blocking
 - [ ] Status is Ready For Implementation
 - [ ] Open decisions are empty or non-blocking
 - [ ] P0 and P1 findings are fixed
